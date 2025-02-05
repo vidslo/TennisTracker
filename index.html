@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis Match Tracker</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1 class="text-center">🎾 Tennis Match Tracker 🎾</h1>
+
+    <!-- Create a new match -->
+    <div class="card p-3 my-3">
+        <h3>Create a New Match</h3>
+        <form id="newMatchForm">
+            <div class="form-group">
+                <label for="matchName">Match Name:</label>
+                <input type="text" class="form-control" id="matchName" placeholder="Enter match name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Match</button>
+        </form>
+    </div>
+
+    <!-- Matches List -->
+    <div class="card p-3">
+        <h3>Matches</h3>
+        <ul id="matchesList" class="list-group"></ul>
+    </div>
+</div>
+
+<!-- Modal for Match Details -->
+<div class="modal fade" id="matchModal" tabindex="-1" aria-labelledby="matchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="matchModalLabel">Match Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="matchTitle"></h4>
+                <button class="btn btn-success" onclick="addSet()">➕ Add New Set</button>
+                <h5 class="mt-3">Sets</h5>
+                <ul id="setsList" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Uploading Rally Data -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Rally Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 id="setTitle"></h4>
+                <form>
+                    <div class="form-group">
+                        <label for="rallyFile">Upload CSV:</label>
+                        <input type="file" class="form-control-file" id="rallyFile" accept=".csv">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let matches = [];
+
+    document.getElementById('newMatchForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const matchName = document.getElementById('matchName').value.trim();
+        if (matchName) {
+            const match = { id: matches.length + 1, name: matchName, sets: [] };
+            matches.push(match);
+            updateMatchesList();
+            document.getElementById('newMatchForm').reset();
+        }
+    });
+
+    function updateMatchesList() {
+        const list = document.getElementById('matchesList');
+        list.innerHTML = '';
+        matches.forEach(match => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+                <span>${match.name}</span>
+                <button class="btn btn-sm btn-info" onclick="openMatch(${match.id})">View</button>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    function openMatch(matchId) {
+        const match = matches.find(m => m.id === matchId);
+        if (match) {
+            document.getElementById('matchTitle').innerText = match.name;
+            document.getElementById('setsList').innerHTML = match.sets.map((set, index) =>
+                `<li class="list-group-item">
+                    Set ${index + 1}
+                    <button class="btn btn-sm btn-primary" onclick="openUpload(${matchId}, ${index})">Upload Rally</button>
+                </li>`
+            ).join('');
+            $('#matchModal').modal('show');
+        }
+    }
+
+    function addSet() {
+        const matchTitle = document.getElementById('matchTitle').innerText;
+        const match = matches.find(m => m.name === matchTitle);
+        if (match) {
+            match.sets.push([]);
+            openMatch(match.id);
+        }
+    }
+
+    function openUpload(matchId, setIndex) {
+        const match = matches.find(m => m.id === matchId);
+        document.getElementById('setTitle').innerText = `${match.name} - Set ${setIndex + 1}`;
+        $('#uploadModal').modal('show');
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
