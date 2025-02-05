@@ -105,62 +105,8 @@
     </div>
 </div>
 
-<script>
-    let matches = [];
-    let history = [];
-    let redoStack = [];
-
-    document.getElementById('newMatchForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const matchName = document.getElementById('matchName').value.trim();
-        const player1 = document.getElementById('player1').value.trim();
-        const player2 = document.getElementById('player2').value.trim();
-        const rounds = parseInt(document.getElementById('rounds').value);
-        if (matchName && player1 && player2) {
-            const match = { id: matches.length + 1, name: matchName, player1, player2, rounds, sets: [0, 0], games: [0, 0], rallies: [] };
-            matches.push(match);
-            updateMatchesList();
-            document.getElementById('newMatchForm').reset();
-        }
-    });
-
-    function updateMatchesList() {
-        const list = document.getElementById('matchesList');
-        list.innerHTML = '';
-        matches.forEach(match => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `<span>${match.name}</span>
-                <button class="btn btn-sm btn-info" onclick="openMatch(${match.id})">View</button>`;
-            list.appendChild(li);
-        });
-    }
-
-    function openMatch(matchId) {
-        const match = matches.find(m => m.id === matchId);
-        document.getElementById('matchTitle').innerText = match.name;
-        document.getElementById('player1Name').innerText = match.player1;
-        document.getElementById('player2Name').innerText = match.player2;
-        updateScores(match);
-        $('#matchModal').modal('show');
-    }
-
-    function recordShot(player, shotType) {
-        history.push({ player, shotType });
-        redoStack = [];
-    }
-
-    function undo() {
-        if (history.length > 0) redoStack.push(history.pop());
-    }
-
-    function redo() {
-        if (redoStack.length > 0) history.push(redoStack.pop());
-    }
-</script>
-
+<script src="script.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
